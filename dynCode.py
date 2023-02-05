@@ -1,4 +1,5 @@
 import FreeCAD 
+import math
 import FreeCADGui
 
 
@@ -45,3 +46,48 @@ def create_shapeBinder():
 
 def create_scketch():
    pass
+
+
+def cameraToFocus():
+    focusPoints = []
+    cMass = [ 0, 0, 0]
+
+    def addPoint( point):
+        focusPoints.append( point)
+        cMass[0] += point[0]
+        cMass[1] += point[1]
+        cMass[2] += point[2]
+
+    selObj = FreeCADGui.Selection.getSelectionEx()
+    for obj in selObj:
+        if len( obj.SubObjects) == 0:
+            addPoint( obj.Object.Shape.CenterOfMass)
+        else:
+            for subObj in obj.SubObjects:
+                addPoint( subObj.CenterOfMass)
+            
+    cMass[0] /= len( focusPoints)
+    cMass[1] /= len( focusPoints)
+    cMass[2] /= len( focusPoints)
+    maxDist = 0
+    for point in focusPoints:
+        x = point[0] - cMass[0]
+        y = point[1] - cMass[1]
+        z = point[2] - cMass[2]
+        dist = math.sqrt( x*x + y*y + z*z)
+        if dist > maxDist: 
+            maxDist = dist
+
+    cam = FreeCADGui.ActiveDocument.ActiveView.getCameraNode()
+    cam.position.setValue(cMass[0], cMass[1], cMass[2])
+    cam.position.setValue(cMass[0], cMass[1], cMass[2])
+
+def cameraToFaceNormal():
+    sel = FreeCADGui.Selection.getSelectionEx().SubObjects
+    if len(sel) == 0:
+        printError("No face")
+
+    FreeCADGui.ActiveDocument.ActiveView.getCameraNode()
+    cam.position.setValue()
+    cam.orientation.setValue()
+

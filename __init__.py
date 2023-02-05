@@ -23,6 +23,10 @@ _obj = myFunc()
 def get():
     return _obj.dynPt
 
+def lget():
+    _obj.load()
+    return _obj.dynPt
+
 def load():
     _obj.load()
 
